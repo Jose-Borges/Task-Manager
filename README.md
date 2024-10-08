@@ -5,11 +5,11 @@ The goal of this project is the development of an information system for task ma
 # Documentation
 ----
 Yaml documentation:\
-[Yaml file](https://github.com/Jose-Borges)
+[Yaml file]([https://github.com/Jose-Borges](https://github.com/Jose-Borges/Task-Manager/blob/master/docs/swagger.yaml))
 
 
 Documentation report:\
-[Report](https://github.com/Jose-Borges)
+[Report]([https://github.com/Jose-Borges](https://github.com/Jose-Borges/Task-Manager/blob/master/docs/RelatorioLS.pdf))
 
 # Authors
 ----
