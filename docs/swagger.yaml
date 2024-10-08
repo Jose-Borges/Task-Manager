@@ -1,0 +1,1063 @@
+openapi: 3.0.3
+info:
+  title: Trello Inspired Application
+  description: |-
+    This project's objective is to design and implement an information system for task management inspired by the [Trello](https://trello.com/) application.
+    
+    The application's domain is based on 4 different entities:
+    
+    - User:
+    
+        A user is characterized by, a unique number,a name and an unique email.
+    
+    - Board:
+    
+        A board represents a project or similar activity, and is composed by a set of tasks. Each board has an unique name and a description and is associated to one or several users. The name comes from the analogy with a physical board, containing pinned cards describing tasks. Each board is divided into a sequence of lists, which correspond to columns on a physical board.
+    
+    - List:
+    
+        Each list represents a phase in the execution of a task (e.g. "to do", "doing" and "done"). The relative position of a list in a board can change, however a list always belongs to the same board. A list has a name, which must be unique in the board. Each list contains a sequence of cards.
+    
+    - Card
+    
+        A card represents a task and is always associated to the same board. A card must always be inside a list, except if it is archived. A card can be moved between lists of the same board. Each card is characterized at least by: a name, a description, the creation date and the task's conclusion date.
+
+  version: 1.0.11
+tags:
+  - name: user
+    description: Everything about the user
+  - name: board
+    description: Everything about a board
+  - name: list
+    description: Everything about a list
+  - name: card
+    description: Everything about a card
+paths:
+  /user:
+    post:
+      tags:
+        - user
+      summary: Creates a user
+      description: ''
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userName:
+                  type: string
+                  example: user1
+                email:
+                  type: string
+                  example: user1@gmail.com
+                password:
+                  type: string
+                  example: password101
+      responses:
+        '201':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  first:
+                    type: string
+                    example: 14c50f9e-9e40-4d58-a87d-b9ee019788c0
+                  second:
+                    type: integer
+                    example: 1
+        '400':
+          description: Invalid parameters / Email already in use
+
+    get:
+      tags:
+        - user
+      summary: Gets all existing users
+      description: ''
+      parameters:
+        - name: skip
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    name:
+                      type: string
+                      example: Gonçalo
+                    email:
+                      type: string
+                      example: goncalo@gmail.com
+                    token:
+                      type: string
+                      example: 14c50f9e-9e40-4d58-a87d-b9ee019788c0
+
+  /user/{number}:
+    get:
+      tags:
+        - user
+      summary: Gets the information of a User
+      description: ''
+      operationId: getUser
+      parameters:
+        - name: number
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  name:
+                    type: string
+                    example: Diogo
+                  email:
+                    type: string
+                    example: diogo@gmail.com
+                  token:
+                    type: string
+                    example: 71f212dd-ef24-46f1-9282-72a870cfe0bd
+        '404':
+          description: No user with given Id
+  /users/login:
+    get:
+      tags:
+        - user
+      summary: Gets the information of a User
+      description: ''
+      operationId: login
+      parameters:
+        - name: email
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: password
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: string
+                example: 14c50f9e-9e40-4d58-a87d-b9ee019788c0
+        '400':
+          description: Invalid parameters
+        '404':
+          description: Email or Password is wrong
+
+  /boards:
+    post:
+      tags:
+        - board
+      summary: Creates a board
+      description: User must be logged in.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                boardName:
+                  type: string
+                  example: board1
+                boardDescription:
+                  type: string
+                  example: board description
+      responses:
+        '201':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: integer
+                example: 1
+        '400':
+          description: Invalid parameters
+
+    get:
+      tags:
+        - board
+      summary: Gets boards' information
+      description: Gets every board's information or boards with a specific name
+      operationId: getBoards
+      parameters:
+        - name: boardName
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: userId
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: skip
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    name:
+                      type: string
+                      example: board1
+                    description:
+                      type: string
+                      example: board1 description
+
+  /boards/{bId}:
+    get:
+      tags:
+        - board
+      summary: Gets the information of a board
+      description: ''
+      operationId: getBoard
+      parameters:
+        - name: bId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  name:
+                    type: string
+                    example: board1
+                  description:
+                    type: string
+                    example: description
+                  lists:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        name:
+                          type: string
+                          example: list1
+                        boardId:
+                          type: integer
+                          example: 1
+        '400':
+          description: Invalid parameters
+        '404':
+          description: No board with given Id
+
+    put:
+      tags:
+        - board
+      summary: Adds a user to a board
+      description: User must be logged in
+      operationId: addUserToBoard
+      parameters:
+        - name: bId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: integer
+                  example: 2
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  first:
+                    type: integer
+                    example: 2
+                  second:
+                    type: integer
+                    example: 1
+        '400':
+          description: Invalid parameters / User already has access to this board
+        '401':
+          description: User must be logged in
+        '403':
+          description: User doesn't have access to that board
+        '404':
+          description: No user or board with given Id
+
+  /boards/{bId}/users:
+    get:
+      tags:
+        - board
+      summary: Gets the users of a board
+      description: ''
+      operationId: getBoardUsers
+      parameters:
+        - name: bId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: skip
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    first:
+                      type: integer
+                      example: 1
+                    second:
+                      type: integer
+                      example: 2
+        '400':
+          description: Invalid parameters
+        '404':
+          description: No board with given Id
+
+  /lists:
+    post:
+      tags:
+        - list
+      summary: Creates a new list
+      description: User must be logged in.
+      operationId: createList
+      parameters:
+        - in: query
+          name: boardId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                listName:
+                  type: string
+                  example: to do
+      responses:
+        '201':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: integer
+                example: 1
+        '400':
+          description: Invalid parameters / List name already exists
+        '401':
+          description: User must be logged in
+        '403':
+          description: User doesn't have access to that board
+        '404':
+          description: No board with given Id
+
+    get:
+      tags:
+        - list
+      summary: Gets a board's lists
+      description: ''
+      operationId: getlists
+      parameters:
+        - name: boardId
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: skip
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    name:
+                      type: string
+                      example: list1
+                    boardId:
+                      type: integer
+                      example: 1
+                    cards:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            example: 1
+                          name:
+                            type: string
+                            example: card1
+        '400':
+          description: Invalid parameters
+        '404':
+          description: No board with given Id
+
+  /lists/{lId}:
+    get:
+      tags:
+        - list
+      summary: Gets the information of a list
+      description: ''
+      operationId: getlist
+      parameters:
+        - name: boardId
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: lId
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  name:
+                    type: string
+                    example: to do
+                  boardId:
+                    type: integer
+                    example: 1
+                  cards:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        name:
+                          type: string
+                          example: card1
+        '400':
+          description: Invalid parameters
+        '404':
+          description: No list in board with given Id
+
+  /lists/{lId}/{bId}:
+    delete:
+      tags:
+        - list
+      summary: Deletes a list from a board.
+      description: User must be logged in.
+      operationId: deleteBoard
+      parameters:
+        - name: bId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: lId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: boolean
+                example: true
+        '400':
+          description: Invalid parameters
+        '401':
+          description: User must be logged in
+        '403':
+          description: User doesn't have access to board with given Id
+        '404':
+          description: No list in board with given ID
+
+  /cards:
+    post:
+      tags:
+        - card
+      summary: Creates a card
+      description: User must be logged in.
+      operationId: createCard
+      parameters:
+        - name: boardId
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: listId
+          in: query
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cardName:
+                  type: string
+                  example: card1
+                cardDescription:
+                  type: string
+                  example: description card1
+                conclusionDate:
+                  type: string
+                  description: 'Not Required'
+                  example: 2002-09-21
+      responses:
+        '201':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: integer
+                example: 1
+        '400':
+          description: Invalid parameters / Conclusion Date can't be before Current Date / Card name already exists
+        '401':
+          description: User must be logged in
+        '403':
+          description: User doesn't have access to that board
+        '404':
+          description: No list in board with given ID / No board with given Id
+
+    get:
+      tags:
+        - card
+      summary: Gets a list's cards
+      description: ''
+      operationId: getCards
+      parameters:
+        - name: listId
+          in: query
+          required: true
+          schema:
+            type: integer
+            example: 1
+        - name: skip
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    index:
+                      type: integer
+                      example: 1
+                    name:
+                      type: string
+                      example: card1
+                    description:
+                      type: string
+                      example: card1 description
+                    creationDate:
+                      type: string
+                      example: 2022-12-23
+                    conclusionDate:
+                      type: string
+                      example: 2022-12-25
+                    listId:
+                      type: integer
+                      example: 1
+                    boardId:
+                      type: integer
+                      example: 1
+        '400':
+          description: Invalid parameters
+        '404':
+          description: No list with given Id
+
+  /cards/{cId}:
+    get:
+      tags:
+        - card
+      summary: Gets a card's information
+      description: ''
+      operationId: getCard
+      parameters:
+        - name: listId
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: cId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  index:
+                    type: integer
+                    example: 1
+                  name:
+                    type: string
+                    example: card1
+                  description:
+                    type: string
+                    example: card1
+                  creationDate:
+                    type: string
+                    example: 2022-02-13
+                  conclusionDate:
+                    type: string
+                    example: 2023-02-17
+                  listId:
+                    type: integer
+                    example: 1
+                  boardId:
+                    type: integer
+                    example: 1
+        '400':
+          description: Invalid parameters
+        '404':
+          description: No list with given Id / No card in list with given Id
+
+    put:
+      tags:
+        - card
+      summary: Moves a card to another existing list.
+      description: User must be logged in.
+      operationId: moveCard
+      parameters:
+        - name: boardId
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: oldList
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: newList
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: cId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: newCardIdx
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  index:
+                    type: integer
+                    example: 3
+                  name:
+                    type: string
+                    example: card1
+                  description:
+                    type: string
+                    example: card1
+                  creationDate:
+                    type: string
+                    example: 2022-02-13
+                  conclusionDate:
+                    type: string
+                    example: 2023-02-17
+                  listId:
+                    type: integer
+                    example: 2
+                  boardId:
+                    type: integer
+                    example: 1
+        '400':
+          description: Invalid parameters
+        '401':
+          description: User must be logged in
+        '403':
+          description: User doesn't have access to board with given Id
+        '404':
+          description: No board with given Id / No list in board with given ID / No card in list with given Id
+
+    delete:
+      tags:
+        - card
+      summary: Deletes a card from a list.
+      description: User must be logged in.
+      operationId: deleteCard
+      parameters:
+        - name: boardId
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: listId
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: cId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: boolean
+                example: true
+        '400':
+          description: Invalid parameters
+        '401':
+          description: User must be logged in
+        '403':
+          description: User doesn't have access to board with given Id
+        '404':
+          description: No board with given Id / No list in board with given ID / No card in list with given Id
+
+  /cards/archived/{bId}:
+    get:
+      tags:
+        - card
+      summary: Gets every archived card's infomation of a certain board
+      description: ''
+      operationId: getCardsArchived
+      parameters:
+        - name: bId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: skip
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    index:
+                      type: integer
+                      example: 1
+                    name:
+                      type: string
+                      example: card1
+                    description:
+                      type: string
+                      example: card1 description
+                    creationDate:
+                      type: string
+                      example: 2022-12-23
+                    conclusionDate:
+                      type: string
+                      example: 2022-12-25
+                    listId:
+                      type: integer
+                      example: null
+                    boardId:
+                      type: integer
+                      example: 1
+
+        '400':
+          description: Invalid parameters
+
+  /cards/archived/{cId}/{bId}:
+    get:
+      tags:
+        - card
+      summary: Gets every archived card's infomation of a certain board
+      description: ''
+      operationId: getCardArchived
+      parameters:
+        - name: bId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: cId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  index:
+                    type: integer
+                    example: 1
+                  name:
+                    type: string
+                    example: card1
+                  description:
+                    type: string
+                    example: card1 description
+                  creationDate:
+                    type: string
+                    example: 2022-12-23
+                  conclusionDate:
+                    type: string
+                    example: 2022-12-25
+                  listId:
+                    type: integer
+                    example: null
+                  boardId:
+                    type: integer
+                    example: 1
+        '400':
+          description: Invalid parameters
+        '404':
+          description: No board with given Id / No card in board with given Id / No archived card with given id
+
+  /cards/archived/{cId}/{lId}/{bId}:
+    put:
+      tags:
+        - card
+      summary: Gets every archived card's infomation of a certain board
+      description: ''
+      operationId: archiveCard
+      parameters:
+        - name: bId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: cId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: integer
+                example: 1
+        '400':
+          description: Invalid parameters
+        '404':
+          description: No board with given Id/ No list in board with given Id / No card in list with given Id
+
+  /cards/unarchive/{cId}/{lId}/{bId}:
+    put:
+      tags:
+        - card
+      summary: Gets every archived card's infomation of a certain board
+      description: ''
+      operationId: unarchiveCard
+      parameters:
+        - name: bId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: cId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: lId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  index:
+                    type: integer
+                    example: 1
+                  name:
+                    type: string
+                    example: card1
+                  description:
+                    type: string
+                    example: card1 description
+                  creationDate:
+                    type: string
+                    example: 2022-12-23
+                  conclusionDate:
+                    type: string
+                    example: 2022-12-25
+                  listId:
+                    type: integer
+                    example: null
+                  boardId:
+                    type: integer
+                    example: 1
+        '400':
+          description: Invalid parameters
+        '404':
+          description: No board with given Id/ No list in board with given Id / No archived card with given id
